@@ -11,6 +11,10 @@
       referrerpolicy="no-referrer"
     />
     <link rel="stylesheet" href="styles.css" />
+    <script>
+      window.API_OPENWEATHERMAP = '<?= getenv("API_OPENWEATHERMAP") ?>';
+      window.API_GEO = '<?= getenv("API_GEO") ?>';
+    </script>    
   </head>
   <body>
     <div id="initial-screen">

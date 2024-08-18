@@ -1,8 +1,8 @@
 //import { apiOpenweathermap } from "./apikey.js";
 //import { apiGeo } from "./apikey.js";
 
-const apiOpenweathermap = process.env.API_OPENWEATHERMAP;
-const apiGeo = process.env.API_GEO;
+const apiOpenweathermap = window.API_OPENWEATHERMAP;
+const apiGeo = window.API_GEO;
 
 const initialScreen = document.querySelector("#initial-screen");
 const mainContent = document.querySelector("#main-screen");

@@ -1,9 +1,3 @@
-//import { apiOpenweathermap } from "./apikey.js";
-//import { apiGeo } from "./apikey.js";
-
-const apiOpenweathermap = window.API_OPENWEATHERMAP;
-const apiGeo = window.API_GEO;
-
 const initialScreen = document.querySelector("#initial-screen");
 const mainContent = document.querySelector("#main-screen");
 
@@ -34,11 +28,13 @@ function handleCitySubmit(event) {
 
 async function getData(cityName) {
   try {
+    const urlPart = encodeURIComponent("weather?q=" + cityName + "&units=metric");
+
     const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiOpenweathermap}&units=metric`
+      `https://php-weather-webserver.adaptable.app/index.php?route=openweathermap&url=${urlPart}`
     );
     const data = await response.json();
-    
+    console.log(data)
     if (data.cod === "404") {
       console.error("Error getting location");
     } else {
@@ -68,7 +64,8 @@ async function getWeather(data) {
 async function displayAdditionalForecast(data) {
   const { lat, lon } = data.coord;
   try {
-    const response = await fetch(`http://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiOpenweathermap}`);
+    const urlPart = encodeURIComponent("air_pollution?lat=" + lat + "&lon=" + lon + "&units=metric");
+    const response = await fetch(`https://php-weather-webserver.adaptable.app/index.php?route=openweathermap&url=${urlPart}`);
     const pollutionData = await response.json();
     const airPollution = document.querySelector("#forecast-additional");
     const { co, no, no2, o3, so2, pm2_5: pm2, pm10, nh3 } = pollutionData.list[0].components;
@@ -115,7 +112,8 @@ function displayWeatherForecast(data, dateSunriseTime, dateSunsetTime) {
 
 async function displayHourlyForecast(data) {
   const { lat, lon } = data.coord;
-  const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiOpenweathermap}&units=metric`;
+  const urlPart = encodeURIComponent("forecast?lat=" + lat + "&lon=" + lon + "&units=metric");   
+  const url = `https://php-weather-webserver.adaptable.app/index.php?route=openweathermap&url=${urlPart}`;
   const response = await fetch(url);
   const newData = await response.json();
   const hourlyForecasts = newData.list.slice(0, 6);
@@ -149,7 +147,8 @@ async function displayHourlyForecast(data) {
 
 async function display5dayForecast(data) {
   const { lat, lon } = data.coord;
-  const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiOpenweathermap}&units=metric`;
+  const urlPart = encodeURIComponent("forecast?lat=" + lat + "&lon=" + lon + "&units=metric");   
+  const url = `https://php-weather-webserver.adaptable.app/index.php?route=openweathermap&url=${urlPart}`;
   const response = await fetch(url);
   const newData = await response.json();
   const dailyForecasts = {};
@@ -197,15 +196,18 @@ function formatTime(unixTime, timezone) {
 }
 
 function getIp(json) {
+  const urlPart = encodeURIComponent("country,city?ipAddress=" + json.ip);   
+  
   fetch(
-    `https://geo.ipify.org/api/v2/country,city?apiKey=${apiGeo}&ipAddress=${json.ip}`
+    `https://php-weather-webserver.adaptable.app/index.php?route=ipify&url=${urlPart}`
   )
     .then((response) => response.json())
     .then((data) => getData(data.location.region));
 }
 
 function getUVIndex(lat, lon) {
-  const uvUrl = `https://api.openweathermap.org/data/2.5/uvi?lat=${lat}&lon=${lon}&appid=${apiOpenweathermap}`;
+  const urlPart = encodeURIComponent("uvi?lat=" + lat + "&lon=" + lon + "&units=metric");   
+  const uvUrl = `https://php-weather-webserver.adaptable.app/index.php?route=openweathermap&url=${urlPart}`;
 
   fetch(uvUrl)
     .then((response) => response.json())
@@ -232,9 +234,11 @@ function getCurrentPosition() {
 }
 
 async function currentLocation(lat, lon) {
+  const urlPart = encodeURIComponent("weather?lat=" + lat + "&lon=" + lon + "&units=metric");   
   const weather = await fetch(
-    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiOpenweathermap}&units=metric`
+    `https://php-weather-webserver.adaptable.app/index.php?route=openweathermap&url=${urlPart}`
   );
+
   return await weather.json();
 }
 
@@ -242,6 +246,7 @@ let success = function (data) {
   let lat = data.coords.latitude;
   let lon = data.coords.longitude;
   currentLocation(lat, lon).then((data) => {
+    console.log('success');
     getWeather(data);
     initialScreen.style.display = "none";
     mainContent.style.display = "block";

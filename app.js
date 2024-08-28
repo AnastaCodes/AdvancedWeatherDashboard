@@ -2,6 +2,8 @@ const initialScreen = document.querySelector("#initial-screen");
 const mainContent = document.querySelector("#main-screen");
 
 document.addEventListener("DOMContentLoaded", () => {
+  loadUserPreferences();
+
   const initialForm = initialScreen.querySelector("#find");
   const mainForm = mainContent.querySelector("#find");
 
@@ -22,6 +24,7 @@ function handleCitySubmit(event) {
     mainContent.style.display = "block";
   }
   if (cityName) {
+    saveUserPreferences(cityName); 
     getData(cityName);
   }
 }
@@ -281,4 +284,27 @@ function toggleDarkMode() {
   forecastPressureImg.src = isDarkMode ? "./img/pressure-white.png" : "./img/pressure.png";
   forecastUvImg.src = isDarkMode ? "./img/uv-white.png" : "./img/uv.png";
   forecastIcon.style.backgroundColor = isDarkMode ? "#72a1be36" : "";
+
+  localStorage.setItem('isDarkMode', isDarkMode ? 'true' : 'false');
 };
+
+function saveUserPreferences(city) {
+  localStorage.setItem('preferredCity', city);
+  const isDarkMode = document.querySelector(".onoffswitch-checkbox").checked;
+  localStorage.setItem('isDarkMode', isDarkMode ? 'true' : 'false');
+}
+
+function loadUserPreferences() {
+  const preferredCity = localStorage.getItem('preferredCity');
+  const isDarkMode = localStorage.getItem('isDarkMode') === 'true';
+
+  // If the city is saved in localStorage, fill the input
+  if (preferredCity) {
+    document.querySelector("#initial-screen #add").value = preferredCity;
+  } 
+  // Apply the saved dark theme mode
+  if (isDarkMode) {
+    document.querySelector(".onoffswitch-checkbox").checked = true;
+    toggleDarkMode(); 
+  }
+}
